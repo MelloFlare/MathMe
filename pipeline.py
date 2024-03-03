@@ -6,6 +6,8 @@ global_student_num = 0 #Total number of student
 global_question = "" #Teachers Question to ChatGPT
 global_steps_correct = [] #Shows which step was correct 
 
+
+
 class Node: # This hold the Student name, The loops it took for each step, and next pointer to Student
     def __init__(self, data, name): # constructor for the Node
         self.data = data
@@ -48,13 +50,18 @@ class Node: # This hold the Student name, The loops it took for each step, and n
             else:
                 print("Index not present")
 def create_nodes(num_people): #Create the classroom of Students (Creats Each NODE)    -------THIS doesnt work properly, can you try and fix it----------
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     head = None
     print("WOW")
-    for _ in range(num_people):
-        print("Enter Names of Student One by ONe")
+    for i in range(num_people):
+        print("Enter Names of Student One by One")
         name = input("Enter one of the Students name: ")        
         data = [1] * global_total_steps  # Assuming data is empty for each student
-        if head is None:
+        if head == None:
             head = Node(data, name)
         else:
             current_node = head
@@ -64,6 +71,11 @@ def create_nodes(num_people): #Create the classroom of Students (Creats Each NOD
     return head
 
 def superPipeline():   # entirety of the pipeline, calls instructorInput once, then pipeline for as many students as instructur inputs
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     instructorInput()  #instructorInput is called
     print("this happends")
     head = create_nodes(global_student_num) #Creates Stduent NODES
@@ -71,8 +83,14 @@ def superPipeline():   # entirety of the pipeline, calls instructorInput once, t
     traverse_students(head) #Goes through the Classroom 
 
 def traverse_students(head): #Goes through each student one by one, ask them the question 
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     current_node = head
     while current_node is not None:
+        
         print(current_node.name)
         student_question = [str(global_question) + "  Find the Question in this, DONT SOLVE OR DONT GIVE HINTS"] #The Summary of Teachers question to ChatGPT
         messages = generate_message(student_question) 
@@ -91,6 +109,11 @@ def traverse_students(head): #Goes through each student one by one, ask them the
 
 
 def pipeline(current_node): #runs through the correctness of each step the student did, takes in that Stduents node
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     curr = current_node
     index = 0
     while index < len(global_steps_correct) and global_steps_correct[index]:
@@ -106,6 +129,11 @@ def pipeline(current_node): #runs through the correctness of each step the stude
 
 # asks instructor for input, returns multi-line string with the question, wanted number of steps, specific steps wanted, max numer of mistakes per step, and number of students
 def instructorInput():
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     print()
     print("Question Setpup!")
     global_question = input("Enter the question: ")
@@ -124,6 +152,11 @@ def instructorInput():
 
 #does one loop of student answering and recieving feedback and returns if the student was correct
 def inputLoop(index, bol, curr):
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     current_node = curr
     index = index
     repeat = bol
@@ -179,5 +212,10 @@ def inputLoop(index, bol, curr):
 
 
 def counter(curr, index):
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
     current_node = curr
     current_node.data[index] += 1
