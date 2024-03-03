@@ -5,7 +5,6 @@ import webbrowser
 
 
 
-
 my_array = [True, True, False, False, True, False, False]
 
 # Initialize index

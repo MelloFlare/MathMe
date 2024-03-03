@@ -107,6 +107,7 @@ def traverse_students(head): #Goes through each student one by one, ask them the
         pipeline(current_node) # Goes though the Each steps and check how well they did
 
         current_node = current_node.next #goes the next student and repeats until no Student nodes left
+    displayReport(head)
 
 
 def pipeline(current_node): #runs through the correctness of each step the student did, takes in that Stduents node
@@ -226,3 +227,24 @@ def counter(curr, index):
     global global_steps_correct
     current_node = curr
     current_node.data[index] += 1
+
+def displayReport(head):
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
+    curr = head
+    totalData = [curr.data.length]
+    print("----------------------------------------------------------------------------------------------------")
+    print("Instructor report:")
+    while(curr != None):
+        print(curr.name + " attempts per step: ")
+        for i in range(0, curr.data.length()):
+            print("Step " + i+1 + ": " + curr.data[i])
+            totalData[i] += curr.data[i]
+        curr = curr.next
+    print("Overall attepts per step: ")
+    for j in range(0, totalData.length()):
+        print("Step " + i+1 + ": " + totalData[j])
+    print("----------------------------------------------------------------------------------------------------")
