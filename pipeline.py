@@ -145,15 +145,16 @@ def instructorInput():
     print()
     print("Question Setpup!")
     global_question = input("Enter the question: ")
-    global_question = global_question + ", Just answer with _. , AND DO NOT ADD spaces between each steps"
-    #Keep each step in one line, label each step, 'Step _:' , and DONT ADD spaces between steps 
+    global_question = global_question + ", Keep each step in one line, label each step, 'Step _:' , and DONT ADD spaces between steps"
     print() #Asked the Teach to write a Question 
     messages = generate_message(global_question)
     response = ask_question(messages, model)
     t = print_response(response) #Store the ChatGpt response in t
+    print(t)
 
-    global_question_steps = t.splitlines() #turn steps in t into a array in x
-    #global_question_steps = each_step(x) #Adds number to the beginning
+
+    x = t.splitlines() #turn steps in t into a array in x
+    global_question_steps = [line for line in x if line.strip()]
     global_total_steps = len(global_question_steps) #gets the total steps
 
     global_student_num = int(input("How many students are answering this question: ")) # how many students are there
@@ -243,16 +244,16 @@ def displayReport(head):
     global global_question
     global global_steps_correct
     curr = head
-    totalData = [curr.data.length]
+    totalData = [0]*len(curr.data)
     print("----------------------------------------------------------------------------------------------------")
     print("Instructor report:")
     while(curr != None):
         print(curr.name + " attempts per step: ")
-        for i in range(0, curr.data.length()):
-            print("Step " + i+1 + ": " + curr.data[i])
+        for i in range(0, len(curr.data)):
+            print("Step " + str(i+1) + ": " + str(curr.data[i]))
             totalData[i] += curr.data[i]
         curr = curr.next
     print("Overall attepts per step: ")
-    for j in range(0, totalData.length()):
-        print("Step " + i+1 + ": " + totalData[j])
+    for j in range(0, len(totalData)):
+        print("Step " + str(i + 1) + ": " + str(totalData[j]))
     print("----------------------------------------------------------------------------------------------------")

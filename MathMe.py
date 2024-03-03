@@ -40,13 +40,11 @@ def print_response(response):
 
 
 def each_step(array):
-    oldA = array
     newA = []
-    for elemets in oldA:
-        if( elemets != ''):
-           if(elemets[1] == "." or elemets[2] == '.'):
+    for elemets in array:
+        if elemets != '':
+            if "Step" in elemets:
                 newA.append(elemets)
-
     return newA
 
 
