@@ -137,10 +137,16 @@ def inputLoop(index, bol, curr):
     print()
 
     if(repeat == True): # THIS IS THE THrid time they are attempting this
-        ytLink = [""]
+        ytLink = ["what is this topic about " + str(current_step)]
+        message = generate_message(ytLink)        
+        response = ask_question(message, model)       
+        search_query = print_response(response)
+        youtube_search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
+        
+
         print("Please watch this Video careful about your topic and after watching")
         while(repeat != False):
-            #ADD the video link here  -------------------------------------------PRINT THE LINK_________________________________________________________
+            webbrowser.open(youtube_search_url)
             print("\n Type your answer(Show all work)")
             step_answer = input("Convert your Work into Txt(and input it here surrounded by parenthese): ") #gets student new answer
 
