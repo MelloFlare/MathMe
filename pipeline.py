@@ -110,6 +110,7 @@ def traverse_students(head): #Goes through each student one by one, ask them the
         pipeline(current_node) # Goes though the Each steps and check how well they did
 
         current_node = current_node.next #goes the next student and repeats until no Student nodes left
+    displayReport(head)
 
     displayReport(head)
 
