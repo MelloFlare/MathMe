@@ -1,3 +1,4 @@
+
 from MathMe import *
 import webbrowser
 
@@ -50,14 +51,13 @@ class Node: # This hold the Student name, The loops it took for each step, and n
                 current_node.data = val
             else:
                 print("Index not present")
-def create_nodes(num_people): #Create the classroom of Students (Creats Each NODE)    -------THIS doesnt work properly, can you try and fix it----------
+def create_nodes(num_people): #Create the classroom of Students (Creats Each NODE)   
     global global_question_steps
     global global_total_steps
     global global_student_num
     global global_question
     global global_steps_correct
     head = None
-    print("WOW")
     for i in range(num_people):
         print("Enter Names of Student One by One")
         name = input("Enter one of the Students name: ")        
@@ -78,9 +78,9 @@ def superPipeline():   # entirety of the pipeline, calls instructorInput once, t
     global global_question
     global global_steps_correct
     instructorInput()  #instructorInput is called
-    print("this happends")
+
     head = create_nodes(global_student_num) #Creates Stduent NODES
-    print("waht")
+
     traverse_students(head) #Goes through the Classroom 
 
 def traverse_students(head): #Goes through each student one by one, ask them the question 
@@ -93,7 +93,9 @@ def traverse_students(head): #Goes through each student one by one, ask them the
     while current_node is not None:
         
         print(current_node.name)
-        student_question = [str(global_question) + "  Find the Question in this, DONT SOLVE OR DONT GIVE HINTS"] #The Summary of Teachers question to ChatGPT
+        student_question = [str(global_question) + " What is the Question ONLY"] #The Summary of Teachers question to ChatGPT
+
+
         messages = generate_message(student_question) 
         response = ask_question(messages, model)
         print(print_response(response)) #Shows the Student what question they need to solve
@@ -104,10 +106,12 @@ def traverse_students(head): #Goes through each student one by one, ask them the
         messages = generate_message(testing)
         response = ask_question(messages, model)
         global_steps_correct = print_response(response) #top 3 lines Check for which Step the Student got wrong
+        print(global_steps_correct)
         pipeline(current_node) # Goes though the Each steps and check how well they did
 
         current_node = current_node.next #goes the next student and repeats until no Student nodes left
 
+    displayReport(head)
 
 def pipeline(current_node): #runs through the correctness of each step the student did, takes in that Stduents node
     global global_question_steps
@@ -116,16 +120,19 @@ def pipeline(current_node): #runs through the correctness of each step the stude
     global global_question
     global global_steps_correct
     curr = current_node
-    index = 0
-    while index < len(global_steps_correct) and global_steps_correct[index]: #Finds the first False in Step_correct
-        index += 1
-
-    if index < len(global_steps_correct):   # Check if a False value was found
-        inputLoop(index, False, curr) #Sents it to be Fixed
+    
+    index_false = find_false(global_steps_correct)
+    print("_________________________________________________" + str(index_false))
+    if index_false != -1:
+        inputLoop(index_false, False, curr)
     else:
-        print("Good Job!! This is correct") # They got everything correct
+        print("Good Job You Did it")
 
-
+def find_false(arr):
+    for i in range(len(arr)):
+        if arr[i] == False:
+            return i
+    return -1
 
 
 # asks instructor for input, returns multi-line string with the question, wanted number of steps, specific steps wanted, max numer of mistakes per step, and number of students
@@ -138,18 +145,20 @@ def instructorInput():
     print()
     print("Question Setpup!")
     global_question = input("Enter the question: ")
-    global_question = global_question + ", Keep each step in one line, number each step, and DONT ADD spaces between steps "
+    global_question = global_question + ", Just answer with _. , AND DO NOT ADD spaces between each steps"
+    #Keep each step in one line, label each step, 'Step _:' , and DONT ADD spaces between steps 
     print() #Asked the Teach to write a Question 
     messages = generate_message(global_question)
     response = ask_question(messages, model)
     t = print_response(response) #Store the ChatGpt response in t
 
-    x = t.splitlines() #turn steps in t into a array in x
-    global_question_steps = each_step(x) #Adds number to the beginning
+    global_question_steps = t.splitlines() #turn steps in t into a array in x
+    #global_question_steps = each_step(x) #Adds number to the beginning
     global_total_steps = len(global_question_steps) #gets the total steps
 
     global_student_num = int(input("How many students are answering this question: ")) # how many students are there
 
+    print(global_question_steps)
 
 #does one loop of student answering and recieving feedback and returns if the student was correct
 def inputLoop(index, bol, curr):
@@ -226,3 +235,24 @@ def counter(curr, index):
     global global_steps_correct
     current_node = curr
     current_node.data[index] += 1
+
+def displayReport(head):
+    global global_question_steps
+    global global_total_steps
+    global global_student_num
+    global global_question
+    global global_steps_correct
+    curr = head
+    totalData = [curr.data.length]
+    print("----------------------------------------------------------------------------------------------------")
+    print("Instructor report:")
+    while(curr != None):
+        print(curr.name + " attempts per step: ")
+        for i in range(0, curr.data.length()):
+            print("Step " + i+1 + ": " + curr.data[i])
+            totalData[i] += curr.data[i]
+        curr = curr.next
+    print("Overall attepts per step: ")
+    for j in range(0, totalData.length()):
+        print("Step " + i+1 + ": " + totalData[j])
+    print("----------------------------------------------------------------------------------------------------")
