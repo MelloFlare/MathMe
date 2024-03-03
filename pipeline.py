@@ -1,4 +1,5 @@
 from MathMe import *
+import webbrowser
 
 global_question_steps = []  #ChatGPT step by step solution in array 
 global_total_steps = 0 #lenght of global_question_steps or total steps to solve
@@ -105,7 +106,7 @@ def traverse_students(head): #Goes through each student one by one, ask them the
         global_steps_correct = print_response(response) #top 3 lines Check for which Step the Student got wrong
         pipeline(current_node) # Goes though the Each steps and check how well they did
 
-        current_node = current_node.next
+        current_node = current_node.next #goes the next student and repeats until no Student nodes left
 
 
 def pipeline(current_node): #runs through the correctness of each step the student did, takes in that Stduents node
@@ -116,14 +117,14 @@ def pipeline(current_node): #runs through the correctness of each step the stude
     global global_steps_correct
     curr = current_node
     index = 0
-    while index < len(global_steps_correct) and global_steps_correct[index]:
+    while index < len(global_steps_correct) and global_steps_correct[index]: #Finds the first False in Step_correct
         index += 1
 
-    # Check if a False value was found
-    if index < len(global_steps_correct):
-        inputLoop(index, False, curr)
+    if index < len(global_steps_correct):   # Check if a False value was found
+        inputLoop(index, False, curr) #Sents it to be Fixed
     else:
-        print("Good Job!! This is correct")
+        print("Good Job!! This is correct") # They got everything correct
+
 
 
 
@@ -138,16 +139,16 @@ def instructorInput():
     print("Question Setpup!")
     global_question = input("Enter the question: ")
     global_question = global_question + ", Keep each step in one line, number each step, and DONT ADD spaces between steps "
-    print()
+    print() #Asked the Teach to write a Question 
     messages = generate_message(global_question)
     response = ask_question(messages, model)
-    t = print_response(response)
+    t = print_response(response) #Store the ChatGpt response in t
 
-    x = t.splitlines()
-    global_question_steps = each_step(x)
-    global_total_steps = len(global_question_steps)
+    x = t.splitlines() #turn steps in t into a array in x
+    global_question_steps = each_step(x) #Adds number to the beginning
+    global_total_steps = len(global_question_steps) #gets the total steps
 
-    global_student_num = int(input("How many students are answering this question: "))
+    global_student_num = int(input("How many students are answering this question: ")) # how many students are there
 
 
 #does one loop of student answering and recieving feedback and returns if the student was correct
@@ -166,46 +167,52 @@ def inputLoop(index, bol, curr):
     message = generate_message(questions_to_ask)        
     response = ask_question(message, model)       
     question = print_response(response)
-    print(print_response(question))
+    print(print_response(question)) 
     print()
 
-    if(repeat == True):
-        #Ask gpt for video
+    if(repeat == True): # THIS IS THE THrid time they are attempting this
+        ytLink = ["what is this topic about " + str(current_step)]
+        message = generate_message(ytLink)        
+        response = ask_question(message, model)       
+        search_query = print_response(response)
+        youtube_search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
+        
+
         print("Please watch this Video careful about your topic and after watching")
         while(repeat != False):
-            #ADD the video link here
+            webbrowser.open(youtube_search_url)
             print("\n Type your answer(Show all work)")
-            step_answer = input("Convert your Work into Txt(and input it here surrounded by parenthese): ")
+            step_answer = input("Convert your Work into Txt(and input it here surrounded by parenthese): ") #gets student new answer
 
             testing =  [str(current_step) + " Does this step match up with " + str(step_answer) + r", if a step is correct say True or if its incorrect say False"]
             messages = generate_message(testing)
             response = ask_question(messages, model)
-            correctness = print_response(response)
-            if(correctness):
+            correctness = print_response(response) #Checks and see if its true or false
+            if(correctness): #if true They got it correct, updates the loop, and exits 
                 print("Congrats!! You got this step correct")
                 counter(current_node, index)
-                global_steps_correct[index] = True
+                global_steps_correct[index] = True #Turns the false answer to True
                 repeat = False
-            else:
+            else: #They got it wrong, goes back to start of while, updates loop(data)
                 print("Please, relook at Video")
                 counter(current_node, index)
                 
-        pipeline(current_node)
+        pipeline(current_node) #Goes back and checks again 
         
-    else:
+    else:  #THIS IS THE SECOND attempt
         print("\n Type your answer(Show all work)")
-        step_answer = input("Convert your Work into Txt(and input it here surrounded by parenthese): ")
+        step_answer = input("Convert your Work into Txt(and input it here surrounded by parenthese): ") #gets the new answer from student for that Step
 
         testing =  [str(current_step) + " Does this step match up with " + str(step_answer) + r", if a step is correct say True or if its incorrect say False"]
         messages = generate_message(testing)
         response = ask_question(messages, model)
-        correctness = print_response(response)
-        if(correctness):
+        correctness = print_response(response) #Checks if the answer is True or False
+        if(correctness): #If True they Got it correct, updates the loop, and exits
             counter(current_node, index)
             print("Congrats!! You got this step correct")
             global_steps_correct[index] = True
-            pipeline(current_node)
-        else:
+            pipeline(current_node) #goes back and checks agin
+        else: # They got it wrong updates the loop, resends the index, turn Result = True, adn current_node
             print("This is incorrect, Please try again")
             counter(current_node, index)
             inputLoop(index, True, current_node)

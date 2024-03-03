@@ -1,6 +1,7 @@
 from pipeline import *
 #from openai import OpenAI
-from MathMe import ask_question, generate_message, print_response, model
+from MathMe import *
+import webbrowser
 
 
 
